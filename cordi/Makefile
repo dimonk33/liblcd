@@ -19,7 +19,7 @@
 
 BINARY = main
 
-OBJS = ./fonts/font_courier_new12.o \
+OBJS = ./fonts/font_ubuntu12.o \
 	../liblcd/glib.o \
 	../liblcd/eadog.o
 

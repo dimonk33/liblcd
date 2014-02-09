@@ -157,7 +157,7 @@ int main(void)
     eadog_init(&eadog, NULL);
     glib_init(&gdev, (struct glib_lcd*)&eadog);
 
-    glib_font_set(&gdev, &font_courier_new12);
+    glib_font_set(&gdev, &font_ubuntu12);
     glib_print(&gdev, 0, 12, "Hello World!");
     glib_print(&gdev, 0, 24, "Привет мир!");
     glib_flush(&gdev);
