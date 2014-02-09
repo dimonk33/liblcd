@@ -5,6 +5,8 @@ liblcd - Simple LCD Library
 liblcd is a simple library for interfacing LCD graphics displays from
 microcontrollers.
 
+.. image:: https://raw.github.com/uvc-ingenieure/liblcd/master/images/cordi-utf8.jpg
+
 ========
 Features
 ========
