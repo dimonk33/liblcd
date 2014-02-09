@@ -155,7 +155,7 @@ void MainWindow::btnExportClicked()
 
     QString str = ldtCharacters->text();
     for (QString::const_iterator itr(str.begin()); itr != str.end(); itr++)
-        if (!charset.contains(*itr) && *itr != ' ')
+        if (!charset.contains(*itr))
             charset.append(*itr);
 
     qSort(charset);
@@ -165,9 +165,8 @@ void MainWindow::btnExportClicked()
     QFontMetrics metrics = QFontMetrics(font);
     QTextCodec *codec = QTextCodec::codecForName("utf-8");
 
-    qDebug() << "charset:" << charset << font.family();
-
     QString glyphs;
+
     QString fontName = QString("font_%1%2")
             .arg(font.family().toLower())
             .arg(font.pointSize())
@@ -184,36 +183,38 @@ void MainWindow::btnExportClicked()
     while (itr.hasNext()) {
         QChar c = itr.next();
 
-        QRect boundingRect = metrics.boundingRect(c);
+        if (c == ' ') {
+            // Add space character
+            fontstruct += QString("{.utf8 = 0x20, .x = %1, .y = 0, .bitmap = NULL}")
+                    .arg(metrics.width(' '));
 
-        QImage image = QImage(boundingRect.width(), boundingRect.height(), QImage::Format_Mono);
-        // QImage image = QImage(100, 100, QImage::Format_Mono);
+        } else {
+            QRect boundingRect = metrics.boundingRect(c);
 
-        image.fill(Qt::color1);
+            QImage image = QImage(boundingRect.width(), boundingRect.height(),
+                    QImage::Format_Mono);
 
-        QPainter p;
-        p.begin(&image);
-        p.setFont(font);
-        p.setWindow(metrics.boundingRect(c));
-        p.drawText(0, 0, c);
-        p.end();
+            image.fill(Qt::color1);
 
-        QString utf8 = codec->fromUnicode(c).toHex();
+            QPainter p;
+            p.begin(&image);
+            p.setFont(font);
+            p.setWindow(metrics.boundingRect(c));
+            p.drawText(0, 0, c);
+            p.end();
 
-        glyphs += renderGlyph(utf8, image);
-        fontstruct += QString("{.utf8 = 0x%1, .x = %2, .y = %3, .bitmap = &glyph_%1}")
-                .arg(utf8)
-                .arg(boundingRect.x())
-                .arg(boundingRect.y());
+            QString utf8 = codec->fromUnicode(c).toHex();
 
+            glyphs += renderGlyph(utf8, image);
+            fontstruct += QString("{.utf8 = 0x%1, .x = %2, .y = %3, .bitmap = &glyph_%1}")
+                    .arg(utf8)
+                    .arg(boundingRect.x())
+                    .arg(boundingRect.y());
+        }
 
-        fontstruct += ",\n        ";
+        if (itr.hasNext())
+            fontstruct += ",\n        ";
     }
-
-    // Add space character
-    fontstruct += QString("{.utf8 = 0x20, .x = %1, .y = 0, .bitmap = NULL}")
-            .arg(metrics.width(' '));
-
 
     fontstruct += "\n    }\n};\n";
 
