@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::createGui()
 {
-    setWindowIcon(QIcon(":/images/icon.png"));
+    setWindowIcon(QIcon(":/images/uvc.ico"));
     setWindowTitle(tr("UVC Font Converter"));
 
     menuBar()->addAction(tr("&About"), this, SLOT(aboutClicked()));

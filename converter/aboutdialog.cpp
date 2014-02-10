@@ -30,7 +30,7 @@
 AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent)
 {
-    setWindowIcon(QIcon(":/images/icon.png"));
+    setWindowIcon(QIcon(":/images/uvc.ico"));
     setWindowTitle(tr("About UVC Font Converter"));
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
