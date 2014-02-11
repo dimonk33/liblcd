@@ -23,3 +23,5 @@ FORMS    +=
 
 RESOURCES += \
     images.qrc
+
+RC_FILE = ./converter.rc
