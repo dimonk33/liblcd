@@ -17,4 +17,7 @@ Features
 * Driver for Electronic Assembly's EADOG displays
 * MIT license
 
+See the `Blogpost <http://uvc.de/posts/liblcd-graphics-library-with-font-generator.html>`
+for detailed information.
+
 .. footer:: Copyright (c) UVC Ingenieure http://uvc.de/
