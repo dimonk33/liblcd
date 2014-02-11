@@ -17,10 +17,4 @@ Features
 * Driver for Electronic Assembly's EADOG displays
 * MIT license
 
-=====
-Usage
-=====
-
-See the included example in `./cordi` for our cordi prototyping board.
-
 .. footer:: Copyright (c) UVC Ingenieure http://uvc.de/
