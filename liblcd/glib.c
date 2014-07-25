@@ -120,6 +120,11 @@ void glib_print(struct glib_dev *dev, int x, int y, const char *utf8)
     }
 }
 
+void glib_clear(struct glib_dev *dev)
+{
+    dev->lcd->clear(dev->lcd);
+}
+
 void glib_init(struct glib_dev *dev, struct glib_lcd *lcd)
 {
     dev->lcd = lcd;

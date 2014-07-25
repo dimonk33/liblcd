@@ -42,6 +42,7 @@ static void eadog_reset(struct eadog *eadog, bool reset);
 
 /* OPs */
 static void eadog_flush(struct glib_lcd *dev);
+static void eadog_clear(struct glib_lcd *dev);
 static void eadog_setpix(struct glib_lcd *dev, int x, int y);
 static void eadog_clrpix(struct glib_lcd *dev, int x, int y);
 static void eadog_draw_bitmap(struct glib_lcd *dev, int x, int y,
@@ -83,6 +84,17 @@ static void eadog_flush(struct glib_lcd *dev)
             eadog->write(eadog->priv, eadog->fb[page], EADOG_XRES);
         }
     }
+}
+
+static void eadog_clear(struct glib_lcd *dev)
+{
+    struct eadog *eadog = (struct eadog*)dev;
+
+    /* Mark all pages dirty */
+
+    memset(&eadog->dirty, 0xff, sizeof(eadog->dirty));
+
+    memset(eadog->fb, 0, sizeof(eadog->fb));
 }
 
 static void eadog_setpix(struct glib_lcd *dev, int x, int y)
@@ -140,14 +152,12 @@ void eadog_init(struct eadog *dev, void *priv)
 
     /* OPs */
     dev->lcd.flush       = eadog_flush;
+    dev->lcd.clear       = eadog_clear;
     dev->lcd.draw_bitmap = eadog_draw_bitmap;
     dev->lcd.setpix      = eadog_setpix;
     dev->lcd.clrpix      = eadog_clrpix;
 
-    /* Mark all pages dirty */
-    memset(&dev->dirty, 0xff, sizeof(dev->dirty));
-
-    memset(dev->fb, 0, sizeof(dev->fb));
+    eadog_clear((struct glib_lcd*)dev);
 
     /* Initialize display with init sequence */
 

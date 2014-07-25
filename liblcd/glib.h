@@ -53,6 +53,7 @@ struct glib_lcd {
                         const struct glib_bitmap *bitmap);
     void (*setpix)(struct glib_lcd *dev, int x, int y);
     void (*clrpix)(struct glib_lcd *dev, int x, int y);
+    void (*clear)(struct glib_lcd *dev);
     uint16_t xres;
     uint16_t yres;
 };
@@ -66,6 +67,7 @@ struct glib_dev {
 
 
 void glib_init(struct glib_dev *dev, struct glib_lcd *lcd);
+void glib_clear(struct glib_dev *dev);
 void glib_flush(struct glib_dev *dev);
 void glib_font_set(struct glib_dev *dev, const struct glib_font *font);
 void glib_print(struct glib_dev *dev, int x, int y, const char *utf8);
