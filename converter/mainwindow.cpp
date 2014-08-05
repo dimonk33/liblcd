@@ -218,7 +218,7 @@ void MainWindow::btnExportClicked()
 
     fontstruct += "\n    }\n};\n";
 
-    glyphs = "#include \"glib.h\"\n\n" + glyphs + "\n" + fontstruct;
+    glyphs = "#include <liblcd/glib.h>\n\n" + glyphs + "\n" + fontstruct;
 
 
     QString filename = QFileDialog::getSaveFileName(this,
