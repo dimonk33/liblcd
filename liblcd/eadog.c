@@ -41,11 +41,11 @@ static void eadog_cmd(struct eadog *eadog, uint8_t cmd);
 static void eadog_reset(struct eadog *eadog, bool reset);
 
 /* OPs */
-static void eadog_flush(struct glib_lcd *dev);
-static void eadog_clear(struct glib_lcd *dev);
-static void eadog_setpix(struct glib_lcd *dev, int x, int y);
-static void eadog_clrpix(struct glib_lcd *dev, int x, int y);
-static void eadog_draw_bitmap(struct glib_lcd *dev, int x, int y,
+static void eadog_flush(struct glib_dev *dev);
+static void eadog_clear(struct glib_dev *dev);
+static void eadog_setpix(struct glib_dev *dev, int x, int y);
+static void eadog_clrpix(struct glib_dev *dev, int x, int y);
+static void eadog_draw_bitmap(struct glib_dev *dev, int x, int y,
                               const struct glib_bitmap *bitmap);
 
 static void eadog_reset(struct eadog *eadog, bool reset)
@@ -61,7 +61,7 @@ static void eadog_cmd(struct eadog *eadog, uint8_t cmd)
     eadog->write(eadog->priv, &cmd, sizeof(cmd));
 }
 
-static void eadog_flush(struct glib_lcd *dev)
+static void eadog_flush(struct glib_dev *dev)
 {
     struct eadog *eadog = (struct eadog*)dev;
     int page;
@@ -86,7 +86,7 @@ static void eadog_flush(struct glib_lcd *dev)
     }
 }
 
-static void eadog_clear(struct glib_lcd *dev)
+static void eadog_clear(struct glib_dev *dev)
 {
     struct eadog *eadog = (struct eadog*)dev;
 
@@ -97,7 +97,7 @@ static void eadog_clear(struct glib_lcd *dev)
     memset(eadog->fb, 0, sizeof(eadog->fb));
 }
 
-static void eadog_setpix(struct glib_lcd *dev, int x, int y)
+static void eadog_setpix(struct glib_dev *dev, int x, int y)
 {
     struct eadog *eadog = (struct eadog*)dev;
 
@@ -108,7 +108,7 @@ static void eadog_setpix(struct glib_lcd *dev, int x, int y)
     eadog->fb[y / 8][x] |= (1 << (y % 8));
 }
 
-static void eadog_clrpix(struct glib_lcd *dev, int x, int y)
+static void eadog_clrpix(struct glib_dev *dev, int x, int y)
 {
     struct eadog *eadog = (struct eadog*)dev;
 
@@ -119,7 +119,7 @@ static void eadog_clrpix(struct glib_lcd *dev, int x, int y)
     eadog->fb[y / 8][x] &= ~(1 << (y % 8));
 }
 
-static void eadog_draw_bitmap(struct glib_lcd *dev, int x, int y,
+static void eadog_draw_bitmap(struct glib_dev *dev, int x, int y,
                               const struct glib_bitmap *bitmap)
 {
     const uint8_t *p = bitmap->data;
@@ -143,24 +143,26 @@ static void eadog_draw_bitmap(struct glib_lcd *dev, int x, int y,
     }
 }
 
-void eadog_init(struct eadog *dev, void *priv)
+void eadog_init(struct eadog *eadog, void *priv)
 {
-    eadog_reset(dev, true);
-    eadog_reset(dev, false);
+    struct glib_dev *dev = (struct glib_dev*)eadog;
 
-    dev->priv = priv;
+    eadog_reset(eadog, true);
+    eadog_reset(eadog, false);
+
+    eadog->priv = priv;
 
     /* OPs */
-    dev->lcd.flush       = eadog_flush;
-    dev->lcd.clear       = eadog_clear;
-    dev->lcd.draw_bitmap = eadog_draw_bitmap;
-    dev->lcd.setpix      = eadog_setpix;
-    dev->lcd.clrpix      = eadog_clrpix;
+    dev->flush       = eadog_flush;
+    dev->clear       = eadog_clear;
+    dev->draw_bitmap = eadog_draw_bitmap;
+    dev->setpix      = eadog_setpix;
+    dev->clrpix      = eadog_clrpix;
 
-    eadog_clear((struct glib_lcd*)dev);
+    eadog_clear(dev);
 
     /* Initialize display with init sequence */
 
-    dev->data(dev->priv, false);
-    dev->write(dev->priv, g_init_seq, sizeof(g_init_seq));
+    eadog->data(eadog->priv, false);
+    eadog->write(eadog->priv, g_init_seq, sizeof(g_init_seq));
 }

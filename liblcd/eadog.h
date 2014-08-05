@@ -78,7 +78,7 @@
 
 
 struct eadog {
-    struct glib_lcd lcd;
+    struct glib_dev dev;
 
     void (*reset)(void *priv, bool enable);
     void (*data)(void *priv, bool enable);

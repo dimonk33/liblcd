@@ -69,7 +69,7 @@ static int glib_utf8_compare(const void *a, const void *b)
     return ga->utf8 - gb->utf8;
 }
 
-static struct glib_glyph *glib_findglyph(struct glib_dev *dev, const char *utf8)
+static struct glib_glyph *glib_findglyph(struct glib_ctx *ctx, const char *utf8)
 {
     struct glib_glyph glyph = {
         .utf8 = glib_utf8(utf8)
@@ -77,57 +77,57 @@ static struct glib_glyph *glib_findglyph(struct glib_dev *dev, const char *utf8)
 
     return bsearch(
         (void*)&glyph,
-        dev->font->glyphs,
-        dev->font->charcount,
+        ctx->font->glyphs,
+        ctx->font->charcount,
         sizeof(struct glib_glyph),
         glib_utf8_compare);
 }
 
-void glib_flush(struct glib_dev *dev)
+void glib_flush(struct glib_ctx *ctx)
 {
-    dev->lcd->flush(dev->lcd);
+    ctx->dev->flush(ctx->dev);
 }
 
-void glib_font_set(struct glib_dev *dev, const struct glib_font *font)
+void glib_font_set(struct glib_ctx *ctx, const struct glib_font *font)
 {
-    dev->font = font;
+    ctx->font = font;
 }
 
-void glib_print(struct glib_dev *dev, int x, int y, const char *utf8)
+void glib_print(struct glib_ctx *ctx, int x, int y, const char *utf8)
 {
     struct glib_glyph *glyph;
-    dev->x = x;
-    dev->y = y;
+    ctx->x = x;
+    ctx->y = y;
 
     while (*utf8 != '\0') {
-        glyph = glib_findglyph(dev, utf8);
+        glyph = glib_findglyph(ctx, utf8);
 
         if (glyph != NULL) {
             if (glyph->bitmap != NULL) {
-                dev->lcd->draw_bitmap(
-                    dev->lcd,
-                    dev->x + glyph->x,
-                    dev->y + glyph->y,
+                ctx->dev->draw_bitmap(
+                    ctx->dev,
+                    ctx->x + glyph->x,
+                    ctx->y + glyph->y,
                     glyph->bitmap);
 
-                dev->x += glyph->bitmap->width;
+                ctx->x += glyph->bitmap->width;
             }
 
-            dev->x += glyph->x;
+            ctx->x += glyph->x;
         }
 
         utf8 += glib_utf8_charlen(utf8);
     }
 }
 
-void glib_clear(struct glib_dev *dev)
+void glib_clear(struct glib_ctx *ctx)
 {
-    dev->lcd->clear(dev->lcd);
+    ctx->dev->clear(ctx->dev);
 }
 
-void glib_init(struct glib_dev *dev, struct glib_lcd *lcd)
+void glib_init(struct glib_ctx *ctx, struct glib_dev *dev)
 {
-    dev->lcd = lcd;
-    dev->x = 0;
-    dev->y = 0;
+    ctx->dev = dev;
+    ctx->x = 0;
+    ctx->y = 0;
 }
