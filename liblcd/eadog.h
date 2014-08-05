@@ -23,8 +23,8 @@
  * THE SOFTWARE.
  */
 
-#ifndef DOGM_H_
-#define DOGM_H_
+#ifndef _LIBLCD_DOGM_H_
+#define _LIBLCD_DOGM_H_
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -93,4 +93,4 @@ struct eadog {
 void eadog_init(struct eadog *dev, void *priv);
 
 
-#endif  /* DOGM_H_ */
+#endif  /* _LIBLCD_DOGM_H_ */

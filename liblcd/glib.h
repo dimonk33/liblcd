@@ -23,8 +23,8 @@
  * THE SOFTWARE.
  */
 
-#ifndef _GLIB_H_
-#define _GLIB_H_
+#ifndef _LIBLCD_GLIB_H_
+#define _LIBLCD_GLIB_H_
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -72,4 +72,4 @@ void glib_flush(struct glib_dev *dev);
 void glib_font_set(struct glib_dev *dev, const struct glib_font *font);
 void glib_print(struct glib_dev *dev, int x, int y, const char *utf8);
 
-#endif  /* _GLIB_H_ */
+#endif  /* _LIBLCD_GLIB_H_ */
