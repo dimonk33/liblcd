@@ -36,15 +36,22 @@ struct menu_page_menu {
     const struct menu_page *children;
 };
 
+struct menu_page_text {
+    void (*get)(char *text);
+};
+
 enum menu_page_type {
-    MENU_PAGE_MENU
+    MENU_PAGE_MENU,
+    MENU_PAGE_TEXT,
+    MENU_PAGE_INVALID
 };
 
 struct menu_page {
     enum menu_page_type type;
     const char *title;
     union {
-        struct menu_page_menu *children;
+        struct menu_page_menu *menu;
+        struct menu_page_text *text;
     } u;
 };
 
