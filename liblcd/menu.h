@@ -26,6 +26,8 @@
 #ifndef _LIBLCD_MENU_H_
 #define _LIBLCD_MENU_H_
 
+#include "config.h"
+
 /* Forward declarations */
 struct glib_ctx;
 struct menu_page;
@@ -49,9 +51,21 @@ struct menu_page {
 struct menu_ctx {
     struct glib_ctx *glib;
     void *priv;
+    const struct menu_page *stack[CONFIG_MENU_STACKSIZE];
+    const struct menu_page **top;
 };
 
-void menu_init(struct menu_ctx *ctx, struct glib_ctx *glib, void *priv);
+void menu_init(struct menu_ctx *ctx, struct glib_ctx *glib, void *priv,
+               struct menu_page *root);
 void menu_process(struct menu_ctx *ctx);
+
+/* Navigation functions (e. g. for button interactions) */
+void menu_up(struct menu_ctx *ctx);
+void menu_down(struct menu_ctx *ctx);
+void menu_ok(struct menu_ctx *ctx);
+void menu_back(struct menu_ctx *ctx);
+
+void menu_page_push(struct menu_ctx *ctx, struct menu_page *page);
+void menu_page_pop(struct menu_ctx *ctx);
 
 #endif  /* _LIBLCD_MENU_H_ */

@@ -23,11 +23,60 @@
  * THE SOFTWARE.
  */
 
+#include <assert.h>
+#include <string.h>
+
 #include "glib.h"
 #include "menu.h"
 
-void menu_init(struct menu_ctx *ctx, struct glib_ctx *glib, void *priv)
+void menu_init(struct menu_ctx *ctx, struct glib_ctx *glib, void *priv,
+               struct menu_page *root)
 {
+    memset(ctx, 0, sizeof(*ctx));
+
     ctx->glib = glib;
     ctx->priv = priv;
+
+    /* init page stack */
+    ctx->top = ctx->stack - 1;
+
+    menu_page_push(ctx, root);
+}
+
+void menu_process(struct menu_ctx *ctx)
+{
+    (void)ctx;
+}
+
+void menu_up(struct menu_ctx *ctx)
+{
+    (void)ctx;
+}
+
+void menu_down(struct menu_ctx *ctx)
+{
+    (void)ctx;
+}
+
+void menu_ok(struct menu_ctx *ctx)
+{
+    (void)ctx;
+}
+
+void menu_back(struct menu_ctx *ctx)
+{
+    (void)ctx;
+}
+
+void menu_page_push(struct menu_ctx *ctx, struct menu_page *page)
+{
+    assert(*ctx->top < ctx->stack[CONFIG_MENU_STACKSIZE]);
+    *++ctx->top = page;
+}
+
+void menu_page_pop(struct menu_ctx *ctx)
+{
+    if (ctx->top > ctx->stack) {
+        ctx->top--;
+    }
 }
