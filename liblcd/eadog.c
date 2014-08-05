@@ -43,6 +43,8 @@ static void eadog_reset(struct eadog *eadog, bool reset);
 /* OPs */
 static void eadog_flush(struct glib_dev *dev);
 static void eadog_clear(struct glib_dev *dev);
+static enum glib_flags eadog_enable(struct glib_dev *dev, enum glib_flags flags);
+static void eadog_disable(struct glib_dev *dev, enum glib_flags flags);
 static void eadog_setpix(struct glib_dev *dev, int x, int y);
 static void eadog_clrpix(struct glib_dev *dev, int x, int y);
 static void eadog_draw_bitmap(struct glib_dev *dev, int x, int y,
@@ -94,7 +96,20 @@ static void eadog_clear(struct glib_dev *dev)
 
     memset(&eadog->dirty, 0xff, sizeof(eadog->dirty));
 
-    memset(eadog->fb, 0, sizeof(eadog->fb));
+    memset(eadog->fb, eadog->flags & GLIB_INVERT ? 0xff : 0x00, sizeof(eadog->fb));
+}
+
+static enum glib_flags eadog_enable(struct glib_dev *dev, enum glib_flags flags)
+{
+    struct eadog *eadog = (struct eadog*)dev;
+    eadog->flags |= flags;
+    return eadog->flags;
+}
+
+static void eadog_disable(struct glib_dev *dev, enum glib_flags flags)
+{
+    struct eadog *eadog = (struct eadog*)dev;
+    eadog->flags &= ~flags;
 }
 
 static void eadog_setpix(struct glib_dev *dev, int x, int y)
@@ -105,7 +120,12 @@ static void eadog_setpix(struct glib_dev *dev, int x, int y)
         return;
 
     eadog->dirty |= (1 << (y / 8));
-    eadog->fb[y / 8][x] |= (1 << (y % 8));
+
+    if (eadog->flags & GLIB_INVERT) {
+        eadog->fb[y / 8][x] &= ~(1 << (y % 8));
+    } else {
+        eadog->fb[y / 8][x] |= (1 << (y % 8));
+    }
 }
 
 static void eadog_clrpix(struct glib_dev *dev, int x, int y)
@@ -116,7 +136,12 @@ static void eadog_clrpix(struct glib_dev *dev, int x, int y)
         return;
 
     eadog->dirty |= (1 << (y / 8));
-    eadog->fb[y / 8][x] &= ~(1 << (y % 8));
+
+    if (eadog->flags & GLIB_INVERT) {
+        eadog->fb[y / 8][x] |= (1 << (y % 8));
+    } else {
+        eadog->fb[y / 8][x] &= ~(1 << (y % 8));
+    }
 }
 
 static void eadog_draw_bitmap(struct glib_dev *dev, int x, int y,
@@ -158,6 +183,8 @@ void eadog_init(struct eadog *eadog, void *priv)
     dev->draw_bitmap = eadog_draw_bitmap;
     dev->setpix      = eadog_setpix;
     dev->clrpix      = eadog_clrpix;
+    dev->enable      = eadog_enable;
+    dev->disable     = eadog_disable;
 
     eadog_clear(dev);
 

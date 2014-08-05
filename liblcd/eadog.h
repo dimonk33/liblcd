@@ -72,7 +72,7 @@
 
 #define DELAY(l) do {         \
     int i;                    \
-    for (i = 0; i < l; i++) \
+    for (i = 0; i < l; i++)   \
         __asm__("nop");       \
     } while(0)
 
@@ -85,6 +85,7 @@ struct eadog {
     void (*write)(void *priv, const uint8_t *data, size_t len);
     void *priv;
 
+    uint32_t flags;
     uint8_t dirty;        /* Bitmask to mark dirty pages */
     uint8_t fb[EADOG_NPAGES][EADOG_XRES];
 };

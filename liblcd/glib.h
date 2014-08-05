@@ -47,6 +47,10 @@ struct glib_font {
     const struct glib_glyph glyphs[];
 };
 
+enum glib_flags {
+    GLIB_INVERT = 0x01
+};
+
 struct glib_dev {
     void (*flush)(struct glib_dev *dev);
     void (*draw_bitmap)(struct glib_dev *dev, int x, int y,
@@ -54,6 +58,12 @@ struct glib_dev {
     void (*setpix)(struct glib_dev *dev, int x, int y);
     void (*clrpix)(struct glib_dev *dev, int x, int y);
     void (*clear)(struct glib_dev *dev);
+    /* Enable should return the current flags to determite which were accepted
+     * by the driver.
+     */
+    enum glib_flags (*enable)(struct glib_dev *dev, enum glib_flags flags);
+    void (*disable)(struct glib_dev *dev, enum glib_flags flags);
+
     uint16_t xres;
     uint16_t yres;
 };
@@ -63,6 +73,7 @@ struct glib_ctx {
     const struct glib_font *font;
     int x;
     int y;
+    uint32_t flags;
 };
 
 
@@ -71,5 +82,7 @@ void glib_clear(struct glib_ctx *ctx);
 void glib_flush(struct glib_ctx *ctx);
 void glib_font_set(struct glib_ctx *ctx, const struct glib_font *font);
 void glib_print(struct glib_ctx *ctx, int x, int y, const char *utf8);
+void glib_enable(struct glib_ctx *ctx, enum glib_flags flags);
+void glib_disable(struct glib_ctx *ctx, enum glib_flags flags);
 
 #endif  /* _LIBLCD_GLIB_H_ */

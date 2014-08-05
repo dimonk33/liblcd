@@ -125,6 +125,23 @@ void glib_clear(struct glib_ctx *ctx)
     ctx->dev->clear(ctx->dev);
 }
 
+void glib_enable(struct glib_ctx *ctx, enum glib_flags flags)
+{
+    /* To prevent multiple evaluation of the same flags in multiple layers,
+     * we first enable the flags and then disable the accepted ones from the
+     * lower layer.
+     */
+
+    ctx->flags |= flags;
+    ctx->flags &= ~ctx->dev->enable(ctx->dev, flags);
+}
+
+void glib_disable(struct glib_ctx *ctx, enum glib_flags flags)
+{
+    ctx->flags &= ~flags;
+    ctx->dev->disable(ctx->dev, flags);
+}
+
 void glib_init(struct glib_ctx *ctx, struct glib_dev *dev)
 {
     ctx->dev = dev;
