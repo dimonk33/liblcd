@@ -28,12 +28,22 @@
 
 #include "config.h"
 
+#define MENU_SIZE(x) (sizeof((x)) / sizeof((x)[0]))
+
 /* Forward declarations */
 struct glib_ctx;
+struct menu_ctx;
 struct menu_page;
 
 struct menu_page_menu {
-    const struct menu_page *children;
+    int len;
+    const struct menu_page *entries;
+};
+
+struct menu_page_menu_ctx {
+    int index;                  /*!< Selected menu entry */
+    int window;                 /*!< Window position */
+    int epp;                    /*!< Entries per page */
 };
 
 struct menu_page_text {
@@ -50,29 +60,41 @@ struct menu_page {
     enum menu_page_type type;
     const char *title;
     union {
-        struct menu_page_menu *menu;
-        struct menu_page_text *text;
+        struct menu_page_menu menu;
+        struct menu_page_text text;
     } u;
+};
+
+struct menu_ops {
+    void (*setfont)(struct menu_ctx *ctx, void *priv, enum menu_page_type type);
 };
 
 struct menu_ctx {
     struct glib_ctx *glib;
+    const struct menu_ops *ops;
     void *priv;
     const struct menu_page *stack[CONFIG_MENU_STACKSIZE];
     const struct menu_page **top;
+    union {
+        struct menu_page_menu_ctx menu;
+    } u;
+};
+
+enum menu_action {
+    MENU_UP,
+    MENU_DOWN,
+    MENU_BACK,
+    MENU_OK
 };
 
 void menu_init(struct menu_ctx *ctx, struct glib_ctx *glib, void *priv,
-               struct menu_page *root);
+               const struct menu_ops *ops, const struct menu_page *root);
 void menu_process(struct menu_ctx *ctx);
+void menu_render(struct menu_ctx *ctx);
 
-/* Navigation functions (e. g. for button interactions) */
-void menu_up(struct menu_ctx *ctx);
-void menu_down(struct menu_ctx *ctx);
-void menu_ok(struct menu_ctx *ctx);
-void menu_back(struct menu_ctx *ctx);
+void menu_do(struct menu_ctx *ctx, enum menu_action action);
 
-void menu_page_push(struct menu_ctx *ctx, struct menu_page *page);
+void menu_page_push(struct menu_ctx *ctx, const struct menu_page *page);
 void menu_page_pop(struct menu_ctx *ctx);
 
 #endif  /* _LIBLCD_MENU_H_ */
