@@ -162,6 +162,8 @@ void MainWindow::btnExportClicked()
 
     // Render characters
     QFont font = fontSelector->currentFont();
+    font.setPixelSize(font.pointSize());
+
     QFontMetrics metrics = QFontMetrics(font);
     QTextCodec *codec = QTextCodec::codecForName("utf-8");
 
@@ -169,15 +171,17 @@ void MainWindow::btnExportClicked()
 
     QString fontName = QString("font_%1%2")
             .arg(font.family().toLower())
-            .arg(font.pointSize())
+            .arg(font.pixelSize())
             .replace(' ', '_');
 
     QString fontstruct = QString(
             "const struct glib_font %1 = {\n"
             "    .charcount = %2,\n"
+            "    .size = %3,\n"
             "    .glyphs    = {\n        ")
             .arg(fontName)
-            .arg(charset.size());
+            .arg(charset.size())
+            .arg(font.pixelSize());
 
     QListIterator<QChar> itr(charset);
     while (itr.hasNext()) {
@@ -208,8 +212,8 @@ void MainWindow::btnExportClicked()
             glyphs += renderGlyph(utf8, image);
             fontstruct += QString("{.utf8 = 0x%1, .x = %2, .y = %3, .bitmap = &glyph_%1}")
                     .arg(utf8)
-                    .arg(boundingRect.x())
-                    .arg(boundingRect.y());
+                    .arg(boundingRect.x() + 1)
+                    .arg(boundingRect.y() - metrics.descent() + 1); // +1 for the base line
         }
 
         if (itr.hasNext())
