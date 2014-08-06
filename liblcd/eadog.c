@@ -43,6 +43,7 @@ static void eadog_reset(struct eadog *eadog, bool reset);
 /* OPs */
 static void eadog_flush(struct glib_dev *dev);
 static void eadog_clear(struct glib_dev *dev);
+static void eadog_getinfo(struct glib_dev *dev, struct glib_dev_info *info);
 static enum glib_flags eadog_enable(struct glib_dev *dev, enum glib_flags flags);
 static void eadog_disable(struct glib_dev *dev, enum glib_flags flags);
 static void eadog_setpix(struct glib_dev *dev, int x, int y);
@@ -97,6 +98,14 @@ static void eadog_clear(struct glib_dev *dev)
     memset(&eadog->dirty, 0xff, sizeof(eadog->dirty));
 
     memset(eadog->fb, eadog->flags & GLIB_INVERT ? 0xff : 0x00, sizeof(eadog->fb));
+}
+
+static void eadog_getinfo(struct glib_dev *dev, struct glib_dev_info *info)
+{
+    (void)dev;
+
+    info->xres = EADOG_XRES;
+    info->yres = EADOG_YRES;
 }
 
 static enum glib_flags eadog_enable(struct glib_dev *dev, enum glib_flags flags)
@@ -180,6 +189,7 @@ void eadog_init(struct eadog *eadog, void *priv)
     /* OPs */
     dev->flush       = eadog_flush;
     dev->clear       = eadog_clear;
+    dev->getinfo     = eadog_getinfo;
     dev->draw_bitmap = eadog_draw_bitmap;
     dev->setpix      = eadog_setpix;
     dev->clrpix      = eadog_clrpix;

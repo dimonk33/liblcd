@@ -93,6 +93,11 @@ void glib_font_set(struct glib_ctx *ctx, const struct glib_font *font)
     ctx->font = font;
 }
 
+const struct glib_font *glib_font_get(struct glib_ctx *ctx)
+{
+    return ctx->font;
+}
+
 void glib_print(struct glib_ctx *ctx, int x, int y, const char *utf8)
 {
     struct glib_glyph *glyph;
@@ -140,6 +145,11 @@ void glib_disable(struct glib_ctx *ctx, enum glib_flags flags)
 {
     ctx->flags &= ~flags;
     ctx->dev->disable(ctx->dev, flags);
+}
+
+void glib_devinfo_get(struct glib_ctx *ctx, struct glib_dev_info *info)
+{
+    ctx->dev->getinfo(ctx->dev, info);
 }
 
 void glib_init(struct glib_ctx *ctx, struct glib_dev *dev)
