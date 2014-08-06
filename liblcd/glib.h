@@ -26,8 +26,9 @@
 #ifndef _LIBLCD_GLIB_H_
 #define _LIBLCD_GLIB_H_
 
-#include <stdlib.h>
+#include <stdbool.h>
 #include <stdint.h>
+#include <unistd.h>
 
 struct glib_bitmap {
     int width;
@@ -94,5 +95,8 @@ void glib_enable(struct glib_ctx *ctx, enum glib_flags flags);
 void glib_disable(struct glib_ctx *ctx, enum glib_flags flags);
 
 void glib_devinfo_get(struct glib_ctx *ctx, struct glib_dev_info *info);
+
+void glib_rect(struct glib_ctx *ctx, int x, int y, int width, int height,
+               bool fill);
 
 #endif  /* _LIBLCD_GLIB_H_ */

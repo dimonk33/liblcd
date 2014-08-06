@@ -152,6 +152,21 @@ void glib_devinfo_get(struct glib_ctx *ctx, struct glib_dev_info *info)
     ctx->dev->getinfo(ctx->dev, info);
 }
 
+void glib_rect(struct glib_ctx *ctx, int x, int y, int width, int height,
+               bool fill)
+{
+    int w;
+    int h;
+
+    if (fill) {
+        for (h = 0; h < height; h++) {
+            for (w = 0; w < width; w++) {
+                ctx->dev->setpix(ctx->dev, x + w, y + h);
+            }
+        }
+    }
+}
+
 void glib_init(struct glib_ctx *ctx, struct glib_dev *dev)
 {
     ctx->dev = dev;
