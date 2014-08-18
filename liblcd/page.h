@@ -44,13 +44,17 @@ enum page_key {
     PAGE_KEY_BACK
 };
 
+enum page_font {
+    PAGE_FONT_SMALL,
+    PAGE_FONT_MEDIUM,
+    PAGE_FONT_BIG
+};
+
 struct page_type {
     void (*load)(struct page_ctx *ctx, const struct page *page);
     void (*free)(struct page_ctx *ctx, const struct page *page);
     void (*keydown)(struct page_ctx *ctx, enum page_key key);
 };
-
-typedef const struct page_type* page_type_t;
 
 struct page {
     const char *title;
@@ -59,7 +63,7 @@ struct page {
 };
 
 struct page_ops {
-    void (*setfont)(struct page_ctx *ctx, void *priv, page_type_t type);
+    void (*setfont)(struct page_ctx *ctx, void *priv, enum page_font font);
 };
 
 struct page_ctx {
@@ -76,7 +80,7 @@ void page_init(struct page_ctx *ctx, struct glib_ctx *glib, void *priv,
                const struct page_ops *ops, const struct page *root);
 void page_push(struct page_ctx *ctx, const struct page *page);
 void page_pop(struct page_ctx *ctx);
-void page_setfont(struct page_ctx *ctx, page_type_t type);
+void page_setfont(struct page_ctx *ctx, enum page_font font);
 void page_keydown(struct page_ctx *ctx, enum page_key key);
 
 
